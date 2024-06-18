@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Curso.Application\Curso.Application.csproj" />
     <ProjectReference Include="..\Curso.AspIdentity\Curso.AspIdentity.csproj" />
   </ItemGroup>
 
