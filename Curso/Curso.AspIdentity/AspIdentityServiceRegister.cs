@@ -1,4 +1,5 @@
 ﻿using Curso.AspIdentity.Entities;
+using Curso.Domain.AspIdentity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,12 @@ namespace Curso.AspIdentity
     {
         public static IServiceCollection RegisterAspIdentity(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddSingleton(x =>
+            {
+                var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>();
+                return jwtSettings;
+            });
+
             var connectionString = configuration.GetConnectionString("AspIdentityConnectionString");
             services.AddDbContext<AspIdentityDbContext>(options =>
             {
