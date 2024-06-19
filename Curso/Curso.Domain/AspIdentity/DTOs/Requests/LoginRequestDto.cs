@@ -1,4 +1,4 @@
-﻿namespace Curso.Domain.AspIdentity.DTOs
+﻿namespace Curso.Domain.AspIdentity.DTOs.Requests
 {
     public class LoginRequestDto
     {
