@@ -1,6 +1,7 @@
 ﻿using Curso.Domain.AspIdentity.Contracts.Services;
 using Curso.Domain.AspIdentity.DTOs.Requests;
 using Curso.Domain.AspIdentity.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,6 +49,21 @@ namespace Curso.Api.Controllers
 
             var response = await _authService.Register(dto);
             return Ok(response);
+        }
+
+        [HttpPatch("PatchUser")]
+        [Authorize]
+        public async Task<IActionResult> PatchUser(UsuarioPatchRequestDto dto)
+        {
+            var userId = User.Claims.FirstOrDefault(x => x.Type == "Uid")?.Value;
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("No es posible identificar al usuario con el token proporcionado");
+
+            var result = await _authService.PatchUserDetails(userId, dto);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return Ok("Los detalles del usuario fueron actualizados");
         }
     }
 }

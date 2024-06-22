@@ -56,7 +56,28 @@ namespace Curso.Application.AspIdentity.Services
             return response;
         }
 
-        
+        public async Task<IdentityResult> PatchUserDetails(string userId, UsuarioPatchRequestDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                throw new Exception($"El usuario con el id: {userId} no pudo ser encontrado");
+
+            user.UserName = string.IsNullOrWhiteSpace(dto.Username) ? user.UserName : dto.Username;
+            user.Nombre = string.IsNullOrWhiteSpace(dto.Nombre) ? user.Nombre : dto.Nombre;
+            user.Apellidos = string.IsNullOrWhiteSpace(dto.Apellidos) ? user.Apellidos : dto.Apellidos;
+            user.Edad = dto.Edad ?? user.Edad;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join("; ", result.Errors.Select(x => x.Description));
+                throw new Exception($"Hubo errores al actualizar el usuario {userId}: {errors}");
+            }
+
+            return result;
+
+        }
+
         public async Task<RegisterResponseDto> Register(RegisterRequestDto dto)
         {
             var user = new UsuarioIdentity()
