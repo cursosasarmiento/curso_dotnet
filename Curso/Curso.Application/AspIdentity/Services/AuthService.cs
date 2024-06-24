@@ -141,7 +141,7 @@ namespace Curso.Application.AspIdentity.Services
                 audience: _jwtSettings.Audience,
                 claims: claimList,
                 notBefore: DateTime.UtcNow,
-                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.Time),
+                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.Minutes),
                 signingCredentials: credentials
                 );
             return token;
