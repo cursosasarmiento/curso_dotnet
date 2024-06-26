@@ -51,6 +51,33 @@ namespace Curso.Api.Controllers
             return Ok(response);
         }
 
+        [HttpPost("RegisterAdminUser")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> RegisterAdminUser(RegisterRequestDto dto)
+        {
+            var roleString = dto.Role.ToString();
+            if (!roleString.Equals(RoleEnum.Administrator.ToString()))
+            {
+                return BadRequest("El role no es valido");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Username))
+            {
+                return BadRequest("El username y el email son obligatorios");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Password))
+                return BadRequest("La contraseña es obligatoria");
+            if (string.IsNullOrWhiteSpace(dto.PasswordRetyped))
+                return BadRequest("La comprobacion de la contraseña es obligatoria");
+            if (!dto.Password.Equals(dto.PasswordRetyped))
+                return BadRequest("Las contraseñas deben ser iguales");
+
+            var response = await _authService.RegisterAdmin(dto);
+            return Ok(response);
+        }
+        
+
         [HttpPatch("PatchUser")]
         [Authorize]
         public async Task<IActionResult> PatchUser(UsuarioPatchRequestDto dto)

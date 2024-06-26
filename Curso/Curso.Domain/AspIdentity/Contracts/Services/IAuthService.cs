@@ -9,5 +9,6 @@ namespace Curso.Domain.AspIdentity.Contracts.Services
         Task<LoginResponseDto> Login(LoginRequestDto dto);
         Task<RegisterResponseDto> Register(RegisterRequestDto dto);
         Task<IdentityResult> PatchUserDetails(string userId, UsuarioPatchRequestDto dto);
+        Task<AdminRegisterResponseDto> RegisterAdmin(RegisterRequestDto dto);
     }
 }

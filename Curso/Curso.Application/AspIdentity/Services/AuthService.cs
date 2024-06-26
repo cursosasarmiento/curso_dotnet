@@ -80,28 +80,7 @@ namespace Curso.Application.AspIdentity.Services
 
         public async Task<RegisterResponseDto> Register(RegisterRequestDto dto)
         {
-            var user = new UsuarioIdentity()
-            {
-                UserName = dto.Username,
-                Email = dto.Email,
-                EmailConfirmed = false
-            };
-
-            if (!dto.Password.Equals(dto.PasswordRetyped))
-                throw new Exception("Las contraseñas no son iguales");
-
-            var result = await _userManager.CreateAsync(user, dto.Password);
-            if(!result.Succeeded)
-            {
-                var errors = string.Join("; ", result.Errors.Select(x => x.Description));
-                throw new Exception($"Hubo errores durante la creacion del usuario: {errors}");
-            }
-            var roleCheck = await _userManager.AddToRoleAsync(user, dto.Role.ToString());
-            if (!roleCheck.Succeeded)
-            {
-                var errors = string.Join("; ", roleCheck.Errors.Select(x => x.Description));
-                throw new Exception($"Hubo errores durante la adicion de roles al usuario: {errors}");
-            }
+            UsuarioIdentity user = await CreateUser(dto);
 
             var token = await GenerateToken(user);
 
@@ -113,6 +92,20 @@ namespace Curso.Application.AspIdentity.Services
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
             };
 
+            return response;
+        }
+
+        
+
+        public async Task<AdminRegisterResponseDto> RegisterAdmin(RegisterRequestDto dto)
+        {
+            var user = await CreateUser(dto);
+            var response = new AdminRegisterResponseDto()
+            {
+                Email = user.Email,
+                Message = "Usuario administrador creado con exito",
+                Username = user.UserName
+            };
             return response;
         }
 
@@ -145,6 +138,34 @@ namespace Curso.Application.AspIdentity.Services
                 signingCredentials: credentials
                 );
             return token;
+        }
+
+        private async Task<UsuarioIdentity> CreateUser(RegisterRequestDto dto)
+        {
+            var user = new UsuarioIdentity()
+            {
+                UserName = dto.Username,
+                Email = dto.Email,
+                EmailConfirmed = false
+            };
+
+            if (!dto.Password.Equals(dto.PasswordRetyped))
+                throw new Exception("Las contraseñas no son iguales");
+
+            var result = await _userManager.CreateAsync(user, dto.Password);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join("; ", result.Errors.Select(x => x.Description));
+                throw new Exception($"Hubo errores durante la creacion del usuario: {errors}");
+            }
+            var roleCheck = await _userManager.AddToRoleAsync(user, dto.Role.ToString());
+            if (!roleCheck.Succeeded)
+            {
+                var errors = string.Join("; ", roleCheck.Errors.Select(x => x.Description));
+                throw new Exception($"Hubo errores durante la adicion de roles al usuario: {errors}");
+            }
+
+            return user;
         }
 
         #endregion Privete Methods
