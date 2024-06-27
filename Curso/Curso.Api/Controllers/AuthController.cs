@@ -30,7 +30,7 @@ namespace Curso.Api.Controllers
         public async Task<IActionResult> RegisterUser(RegisterRequestDto dto)
         {
             var roleString = dto.Role.ToString();
-            if (!roleString.Equals(RoleEnum.Arrendatario.ToString()))
+            if (roleString.Equals(RoleEnum.Administrator.ToString()))
             {
                 return BadRequest("El role no es valido");
             }
